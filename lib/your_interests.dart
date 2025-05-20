@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dating_app/login_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InterestScreen extends StatefulWidget {
   const InterestScreen({super.key});
@@ -38,6 +41,30 @@ class _InterestScreenState extends State<InterestScreen> {
         selectedValues.add(value);
       }
     });
+  }
+
+  addInterestToDb() async {
+    try {
+      var data = {"interest": selectedValues};
+      FirebaseFirestore db = FirebaseFirestore.instance;
+
+      SharedPreferences sh = await SharedPreferences.getInstance();
+      final String? id = sh.getString("lastRegisteredUid");
+
+      await db
+          .collection("userdetails")
+          .doc(id)
+          .set(data, SetOptions(merge: true));
+      if (!mounted) return;
+
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => LoginScreen(),
+          ));
+    } catch (e) {
+      print(e);
+    }
   }
 
   @override
@@ -148,17 +175,16 @@ class _InterestScreenState extends State<InterestScreen> {
 
           // Continue Button at the Bottom
           Padding(
-            padding: const EdgeInsets.only(bottom: 50.0),
+            padding: const EdgeInsets.only(
+              bottom: 50.0,
+            ),
             child: SizedBox(
               width: double.infinity,
               height: 50, // Same height as choice buttons
               child: ElevatedButton(
                 onPressed: selectedValues.isNotEmpty
                     ? () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginScreen()));
+                        addInterestToDb();
                       } // Navigate to next screen
                     : null, // Disable if no selection
                 style: ElevatedButton.styleFrom(

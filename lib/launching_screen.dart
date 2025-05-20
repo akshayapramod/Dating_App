@@ -1,5 +1,6 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:dating_app/constant/string_values.dart';
+import 'package:dating_app/login_screen.dart';
 import 'package:dating_app/your_interests.dart';
 import 'package:flutter/material.dart';
 
@@ -21,7 +22,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => InterestScreen(),
+            builder: (context) => LoginScreen(),
           ));
     }
     setState(() {});
